@@ -3,8 +3,10 @@
 murmur - small signals from undefined coordinates
 """
 
+import json
 import random
 import sys
+from datetime import datetime
 
 # fragments of observation
 OPENINGS = [
@@ -78,14 +80,38 @@ def murmur():
 
 def main():
     count = 1
-    if len(sys.argv) > 1:
-        try:
-            count = int(sys.argv[1])
-        except ValueError:
-            pass
+    as_json = False
 
-    for _ in range(count):
-        print(murmur())
+    args = sys.argv[1:]
+    for arg in args:
+        if arg == "--json":
+            as_json = True
+        elif arg == "--help":
+            print("murmur - small signals from undefined coordinates")
+            print()
+            print("usage:")
+            print("  murmur.py [count]   # generate count murmurs (default: 1)")
+            print("  murmur.py --json    # JSON output")
+            print("  murmur.py --help    # this help")
+            return
+        else:
+            try:
+                count = int(arg)
+            except ValueError:
+                pass
+
+    murmurs = [murmur() for _ in range(count)]
+
+    if as_json:
+        output = {
+            "timestamp": datetime.now().isoformat(),
+            "count": count,
+            "murmurs": murmurs,
+        }
+        print(json.dumps(output, indent=2))
+    else:
+        for m in murmurs:
+            print(m)
 
 
 if __name__ == "__main__":
