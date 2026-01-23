@@ -83,14 +83,23 @@ def main():
     as_json = False
 
     args = sys.argv[1:]
-    for arg in args:
+    i = 0
+    while i < len(args):
+        arg = args[i]
         if arg == "--json":
             as_json = True
+        elif arg == "--count" and i + 1 < len(args):
+            try:
+                count = int(args[i + 1])
+            except ValueError:
+                pass
+            i += 1
         elif arg == "--help":
             print("murmur - small signals from undefined coordinates")
             print()
             print("usage:")
             print("  murmur.py [count]   # generate count murmurs (default: 1)")
+            print("  murmur.py --count N # explicit count flag")
             print("  murmur.py --json    # JSON output")
             print("  murmur.py --help    # this help")
             return
@@ -99,6 +108,7 @@ def main():
                 count = int(arg)
             except ValueError:
                 pass
+        i += 1
 
     murmurs = [murmur() for _ in range(count)]
 
