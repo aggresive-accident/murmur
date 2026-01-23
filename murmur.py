@@ -213,6 +213,7 @@ def main():
     count = 1
     as_json = False
     theme = None
+    seed = None
 
     args = sys.argv[1:]
     i = 0
@@ -229,6 +230,13 @@ def main():
         elif arg == "--theme" and i + 1 < len(args):
             theme = args[i + 1]
             i += 1
+        elif arg == "--seed" and i + 1 < len(args):
+            try:
+                seed = int(args[i + 1])
+            except ValueError:
+                # allow string seeds too
+                seed = args[i + 1]
+            i += 1
         elif arg == "--themes":
             print("available themes:")
             for t in THEMES:
@@ -242,6 +250,7 @@ def main():
             print("  murmur.py --count N # explicit count flag")
             print("  murmur.py --theme <name> # use themed mode")
             print("  murmur.py --themes  # list available themes")
+            print("  murmur.py --seed N  # set random seed for reproducibility")
             print("  murmur.py --json    # JSON output")
             print("  murmur.py --help    # this help")
             print()
@@ -254,6 +263,10 @@ def main():
                 pass
         i += 1
 
+    # set seed if provided for reproducible randomness
+    if seed is not None:
+        random.seed(seed)
+
     murmurs = [murmur(theme) for _ in range(count)]
 
     if as_json:
@@ -261,6 +274,7 @@ def main():
             "timestamp": datetime.now().isoformat(),
             "count": count,
             "theme": theme,
+            "seed": seed,
             "murmurs": murmurs,
         }
         print(json.dumps(output, indent=2))
